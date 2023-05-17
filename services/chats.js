@@ -21,7 +21,7 @@ exports.getMessages = async function(chat_Id, db){
 
     const messages = await db('Message')
     .where({chat_id: chat_Id})
-    .orderBy('sentAt').desc();
+    .orderBy('sentAt','desc');
 
     return messages;
 

@@ -15,12 +15,12 @@ module.exports = async function (router) {
 
     router.get('/api/chats/:id/messages', async function (req, res) {
 
-        await chatService.getMessages(
+        const messages = await chatService.getMessages(
         req.params.id,
         req.app.get('db')
         );
 
-        res.json({ok: true});
+        res.json(messages);
     });
 
     router.post('/api/chats/:id/messages', async function (req, res) {

@@ -139,9 +139,10 @@ function sendMessage() {
     }
 }
 
-function writeMessageToDB(content){
+async function writeMessageToDB(content){
 
-
+    const written = await POST(`chats/${focusedChat}/messages`, {content:content, 
+        sourceUser_id:session.idUser});
 
 }
 
@@ -149,6 +150,7 @@ function writeMessageToDB(content){
 
 let session = null;
 let chats = null;
+let focusedChat = null;
 
 function createContact(user){
 
@@ -164,7 +166,7 @@ function createContact(user){
 
     entry.addEventListener('click', async (event) => {
     console.warn(event,user);
-    
+    clearAllBubbles();
     const nameheader = document.getElementById('nameheader');
     
     nameheader.innerText = entry.innerText;
@@ -173,19 +175,46 @@ function createContact(user){
     if(!user.idChat){
 
     const created = await POST('chats', {targetUser_id: user.idUser});
-    const messages = await GET(`chats/${created.idChat}/messages`, {});
-
-    console.warn(created);
-    }else{    
-
-    const messages = await GET(`chats/${user.idChat}/messages`, {});
-
-    console.warn(messages);
-    }
-}
-    )
-
+    focusedChat = created.idChat;
     
+    }else{    
+    const messages = await GET(`chats/${user.idChat}/messages`);
+    focusedChat = user.idChat;
+    }
+    loadChat();
+}
+    )   
+}
+
+async function loadChat(){
+    const messages = await GET(`chats/${focusedChat}/messages`);
+
+    displayMessages(messages);
+}
+
+function displayMessages(messages){
+    messages.forEach(message =>{
+        let itstMe;
+        const date = new Date(Number(message.sentAt));
+        if (message.user_id == session.idUser) {
+            itstMe = true;
+        }else{
+            itstMe = false;
+        }
+
+        createChatBubble(message.content, date, itstMe);
+
+    })
+
+}
+
+function clearAllBubbles(){
+
+    const chatbubbles = document.getElementsByClassName('chatbubble');
+
+    while (chatbubbles.length > 0) {
+      chatbubbles[0].parentNode.removeChild(chatbubbles[0]);
+    }
 }
 
 // Attach an event listener to when the entire DOM is rendered

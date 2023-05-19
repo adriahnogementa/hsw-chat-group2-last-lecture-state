@@ -21,19 +21,19 @@ exports.getMessages = async function(chat_Id, db){
 
     const messages = await db('Message')
     .where({chat_id: chat_Id})
-    .orderBy('sentAt','desc');
+    .orderBy('sentAt','asc');
 
     return messages;
 
 }
 
-exports.writeMessage = async function(content,session,db){
+exports.writeMessage = async function(content,sourceUser_Id,id_chat,db){
 
         await db('Message')
         .insert({
             content,
-            sentAt:Date.now(),
-            user_id:session.idUser,
-            chat_id:session.idChat
+            sentAt:BigInt(Date.now()),
+            user_id:sourceUser_Id,
+            chat_id:id_chat
         });
 }

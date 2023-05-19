@@ -1,3 +1,4 @@
+const { raw } = require('express');
 const chatService = require('../services/chats');
 
 
@@ -27,8 +28,9 @@ module.exports = async function (router) {
         
         await chatService.writeMessage(
             req.body.content,
+            req.body.sourceUser_id,
             req.params.id,
-            
+            req.app.get('db')
         );
         res.json({ ok: true });
     });
